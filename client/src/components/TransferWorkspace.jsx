@@ -17,6 +17,8 @@ import {
   Music,
   Archive,
   Code2,
+  ExternalLink,
+  Sparkles,
 } from 'lucide-react';
 
 export default function TransferWorkspace({
@@ -35,23 +37,23 @@ export default function TransferWorkspace({
 
   // File type icon resolver
   const getFileIcon = (fileName, mimeType) => {
-    const ext = fileName.split('.').pop()?.toLowerCase();
+    const ext = fileName?.split('.').pop()?.toLowerCase();
     if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext) || mimeType?.startsWith('image/')) {
-      return <ImageIcon className="file-type-icon image" />;
+      return <ImageIcon className="file-type-icon image" size={24} />;
     }
     if (['mp4', 'mkv', 'webm', 'mov', 'avi'].includes(ext) || mimeType?.startsWith('video/')) {
-      return <Video className="file-type-icon video" />;
+      return <Video className="file-type-icon video" size={24} />;
     }
     if (['mp3', 'wav', 'ogg', 'flac', 'm4a'].includes(ext) || mimeType?.startsWith('audio/')) {
-      return <Music className="file-type-icon audio" />;
+      return <Music className="file-type-icon audio" size={24} />;
     }
     if (['zip', 'rar', 'tar', 'gz', '7z'].includes(ext)) {
-      return <Archive className="file-type-icon archive" />;
+      return <Archive className="file-type-icon archive" size={24} />;
     }
     if (['js', 'ts', 'jsx', 'tsx', 'py', 'java', 'cpp', 'html', 'css', 'json'].includes(ext)) {
-      return <Code2 className="file-type-icon code" />;
+      return <Code2 className="file-type-icon code" size={24} />;
     }
-    return <File className="file-type-icon default" />;
+    return <File className="file-type-icon default" size={24} />;
   };
 
   // Format bytes to human readable string
@@ -67,6 +69,15 @@ export default function TransferWorkspace({
   const formatSpeed = (bytesPerSec) => {
     if (!bytesPerSec || bytesPerSec === 0) return '0 KB/s';
     return `${formatBytes(bytesPerSec)}/s`;
+  };
+
+  // Copy text helper
+  const copyTextToClipboard = (id, text) => {
+    if (text) {
+      navigator.clipboard.writeText(text);
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    }
   };
 
   // Drag and Drop handlers
@@ -90,7 +101,7 @@ export default function TransferWorkspace({
   const handleFileSelect = (e) => {
     if (e.target.files && e.target.files.length > 0) {
       onSendFiles(Array.from(e.target.files));
-      e.target.value = ''; // Reset
+      e.target.value = '';
     }
   };
 
@@ -141,33 +152,34 @@ export default function TransferWorkspace({
   const transferList = Array.from(transfers.values()).reverse();
 
   return (
-    <div className="workspace-container">
+    <div className="workspace-container fade-in">
       {/* Workspace Navigation Tabs */}
-      <div className="workspace-tabs">
+      <div className="workspace-tabs-row">
         <button
-          className={`tab-btn ${activeTab === 'files' ? 'active' : ''}`}
+          className={`workspace-tab-btn ${activeTab === 'files' ? 'active' : ''}`}
           onClick={() => setActiveTab('files')}
         >
           <UploadCloud size={18} />
           <span>Files & Media</span>
-          {transferList.length > 0 && <span className="tab-count">{transferList.length}</span>}
+          {transferList.length > 0 && <span className="tab-badge">{transferList.length}</span>}
         </button>
+
         <button
-          className={`tab-btn ${activeTab === 'text' ? 'active' : ''}`}
+          className={`workspace-tab-btn ${activeTab === 'text' ? 'active' : ''}`}
           onClick={() => setActiveTab('text')}
         >
           <FileText size={18} />
           <span>Text & Links</span>
-          {receivedTexts.length > 0 && <span className="tab-count">{receivedTexts.length}</span>}
+          {receivedTexts.length > 0 && <span className="tab-badge">{receivedTexts.length}</span>}
         </button>
       </div>
 
       {/* Tab Content: FILES & MEDIA */}
       {activeTab === 'files' && (
-        <div className="workspace-content files-tab">
-          {/* Dropzone */}
+        <div className="workspace-tab-content files-tab">
+          {/* Dropzone Card */}
           <div
-            className={`dropzone glass-panel ${isDragOver ? 'drag-over' : ''}`}
+            className={`dropzone-card ${isDragOver ? 'drag-over' : ''}`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
@@ -180,50 +192,50 @@ export default function TransferWorkspace({
               className="hidden-file-input"
               onChange={handleFileSelect}
             />
-            <div className="dropzone-illustration">
-              <UploadCloud className="upload-icon" />
+            <div className="dropzone-icon-wrapper">
+              <UploadCloud size={36} className="dropzone-cloud-icon" />
             </div>
-            <h3 className="dropzone-title">Drop anything here to send instantly</h3>
-            <p className="dropzone-subtext">
+            <h3 className="dropzone-main-title">Drop anything here to send instantly</h3>
+            <p className="dropzone-sub-description">
               Supports photos, 4K videos, documents, zips, & raw binaries with <strong>zero quality loss</strong>.
             </p>
-            <button className="browse-files-btn" type="button">
-              Choose Files
+            <button className="pill-action-btn browse-files-btn" type="button">
+              <span>Choose Files</span>
             </button>
           </div>
 
-          {/* Transfer Queue */}
+          {/* Transfer Queue Section */}
           {transferList.length > 0 && (
             <div className="transfer-queue-section">
-              <div className="queue-header">
-                <h3>Transfers</h3>
+              <div className="queue-section-header">
+                <h3>Transfers Queue</h3>
                 <span className="quality-pill">
                   <ShieldCheck size={14} /> Byte-Perfect / Original Quality
                 </span>
               </div>
 
-              <div className="transfer-list">
+              <div className="transfer-list-stack">
                 {transferList.map((item) => (
-                  <div key={item.id} className={`transfer-card glass-panel status-${item.status}`}>
-                    <div className="transfer-card-header">
-                      <div className="file-info-col">
-                        {getFileIcon(item.name, item.mimeType)}
-                        <div className="file-name-meta">
-                          <h4 className="file-name" title={item.name}>
+                  <div key={item.id} className={`transfer-item-card status-${item.status}`}>
+                    <div className="transfer-item-main-row">
+                      <div className="file-info-cell">
+                        <div className="file-icon-badge">{getFileIcon(item.name, item.mimeType)}</div>
+                        <div className="file-meta-col">
+                          <h4 className="file-title-name" title={item.name}>
                             {item.name}
                           </h4>
-                          <span className="file-size-dir">
+                          <span className="file-size-direction">
                             {formatBytes(item.size)} • {item.direction === 'outgoing' ? 'Sending' : 'Receiving'}
                           </span>
                         </div>
                       </div>
 
-                      <div className="transfer-actions-col">
+                      <div className="file-action-cell">
                         {item.status === 'completed' && item.fileUrl && (
                           <button
                             type="button"
                             onClick={() => handleDownloadFile(item)}
-                            className="download-btn"
+                            className="download-save-btn"
                             title={`Download ${item.name}`}
                           >
                             <Download size={16} />
@@ -233,7 +245,7 @@ export default function TransferWorkspace({
 
                         {item.status === 'transferring' && (
                           <button
-                            className="cancel-btn"
+                            className="cancel-transfer-btn"
                             onClick={() => onCancelTransfer(item.id)}
                             title="Cancel transfer"
                           >
@@ -243,79 +255,73 @@ export default function TransferWorkspace({
                       </div>
                     </div>
 
-                    {/* Media Preview Box (Images & Videos) */}
+                    {/* Media Preview Box */}
                     {item.status === 'completed' && item.fileUrl && (
-                      <div className="media-preview-container">
+                      <div className="media-preview-box">
                         {isImageFile(item.name, item.mimeType) && (
-                          <div className="image-preview-wrapper">
-                            <img
-                              src={item.fileUrl}
-                              alt={item.name}
-                              className="received-preview-img"
-                              onClick={() => handleDownloadFile(item)}
-                              title="Click to download original photo"
-                            />
-                          </div>
+                          <img
+                            src={item.fileUrl}
+                            alt={item.name}
+                            className="media-preview-image"
+                            onClick={() => handleDownloadFile(item)}
+                            title="Click to download photo"
+                          />
                         )}
                         {isVideoFile(item.name, item.mimeType) && (
-                          <div className="video-preview-wrapper">
-                            <video
-                              src={item.fileUrl}
-                              controls
-                              className="received-preview-video"
-                              preload="metadata"
-                            />
-                          </div>
+                          <video
+                            src={item.fileUrl}
+                            controls
+                            className="media-preview-video"
+                            preload="metadata"
+                          />
                         )}
                       </div>
                     )}
 
-                    {/* Progress Bar & Realtime Metrics */}
-                    <div className="progress-section">
-                      <div className="progress-bar-track">
+                    {/* Progress Track */}
+                    <div className="progress-track-block">
+                      <div className="progress-bar-bg">
                         <div
                           className="progress-bar-fill"
                           style={{ width: `${item.progressPercent || 0}%` }}
                         ></div>
                       </div>
 
-                      <div className="progress-metrics-row">
-                        <div className="metrics-left">
+                      <div className="progress-info-row">
+                        <div className="status-label-left">
                           {item.status === 'transferring' && (
                             <>
-                              <span className="metric-pct">{item.progressPercent}%</span>
-                              <span className="metric-speed">• {formatSpeed(item.speedBps)}</span>
+                              <span className="pct-val">{item.progressPercent}%</span>
+                              <span className="speed-val">• {formatSpeed(item.speedBps)}</span>
                               {item.etaSeconds > 0 && (
-                                <span className="metric-eta">
-                                  <Clock size={12} /> ETA: {item.etaSeconds}s
+                                <span className="eta-val">
+                                  <Clock size={12} /> {item.etaSeconds}s
                                 </span>
                               )}
                             </>
                           )}
 
                           {item.status === 'verifying' && (
-                            <span className="verifying-badge">
+                            <span className="verifying-text">
                               <Zap className="spin" size={14} /> Verifying SHA-256 integrity...
                             </span>
                           )}
 
                           {item.status === 'completed' && (
-                            <span className="completed-badge">
-                              <ShieldCheck size={14} className="check-green" />
+                            <span className="completed-text">
+                              <ShieldCheck size={14} className="check-icon-green" />
                               {item.sha256Verified ? '✓ SHA-256 Verified' : 'Transfer Completed'}
                             </span>
                           )}
 
                           {item.status === 'cancelled' && (
-                            <span className="cancelled-badge">Transfer Cancelled</span>
+                            <span className="cancelled-text">Transfer Cancelled</span>
                           )}
 
-                          {item.status === 'failed' && (
-                            <span className="failed-badge">Transfer Failed</span>
-                          )}
+                          {item.status === 'failed' && <span className="failed-text">Transfer Failed</span>}
                         </div>
 
-                        <span className="metric-bytes">
+                        <span className="bytes-ratio">
                           {formatBytes(item.direction === 'outgoing' ? item.bytesSent : item.bytesReceived)} / {formatBytes(item.size)}
                         </span>
                       </div>
@@ -330,60 +336,66 @@ export default function TransferWorkspace({
 
       {/* Tab Content: TEXT & LINKS */}
       {activeTab === 'text' && (
-        <div className="workspace-content text-tab">
-          <form onSubmit={handleTextSubmit} className="text-send-form glass-panel">
+        <div className="workspace-tab-content text-tab">
+          {/* Form Card */}
+          <form onSubmit={handleTextSubmit} className="text-share-card">
             <textarea
-              className="text-input-area"
+              className="text-share-textarea"
               rows={4}
               placeholder="Paste a link, note, snippet, or URL here to send instantly..."
               value={textInput}
               onChange={(e) => setTextInput(e.target.value)}
             ></textarea>
-            <div className="form-bottom-row">
-              <span className="form-tip">Transfers instantly to paired device clipboard / view</span>
-              <button type="submit" className="send-text-btn" disabled={!textInput.trim()}>
+
+            <div className="text-share-actions-row">
+              <span className="text-tip-label">
+                <Sparkles size={14} /> Transfers instantly to paired device clipboard
+              </span>
+              <button type="submit" className="pill-action-btn send-text-primary-btn" disabled={!textInput.trim()}>
                 <Send size={16} />
-                <span>Send Text</span>
+                <span>Send Text / Link</span>
               </button>
             </div>
           </form>
 
-          <div className="received-texts-section">
-            <h3 className="section-title">Transfer History</h3>
+          {/* History Cards */}
+          <div className="received-texts-history">
+            <h3 className="history-section-title">Transfer History</h3>
             {receivedTexts.length === 0 ? (
-              <div className="empty-history glass-panel">
-                <FileText size={32} className="empty-icon" />
+              <div className="empty-texts-card">
+                <FileText size={32} className="empty-text-icon" />
                 <p>No text or links sent yet. Paste anything above to transfer.</p>
               </div>
             ) : (
-              <div className="text-cards-list">
+              <div className="text-cards-stack">
                 {receivedTexts.slice().reverse().map((item) => (
-                  <div key={item.id} className="text-item-card glass-panel">
-                    <div className="text-card-content">
+                  <div key={item.id} className="text-card-item">
+                    <div className="text-card-main-content">
                       {isUrl(item.text) ? (
                         <a
                           href={item.text}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-url-link"
+                          className="text-card-url"
                         >
-                          <LinkIcon size={16} className="url-icon" />
-                          <span>{item.text}</span>
+                          <LinkIcon size={16} className="url-link-icon" />
+                          <span className="url-text-truncate">{item.text}</span>
+                          <ExternalLink size={14} />
                         </a>
                       ) : (
-                        <p className="text-body">{item.text}</p>
+                        <p className="text-card-body-str">{item.text}</p>
                       )}
-                      <span className="text-time">
+                      <span className="text-card-timestamp">
                         {new Date(item.timestamp).toLocaleTimeString()}
                       </span>
                     </div>
 
                     <button
-                      className={`copy-text-btn ${copiedId === item.id ? 'copied' : ''}`}
+                      className={`copy-text-action-btn ${copiedId === item.id ? 'copied' : ''}`}
                       onClick={() => copyTextToClipboard(item.id, item.text)}
                       title="Copy to clipboard"
                     >
-                      {copiedId === item.id ? <Check size={16} /> : <Copy size={16} />}
+                      {copiedId === item.id ? <Check size={15} /> : <Copy size={15} />}
                       <span>{copiedId === item.id ? 'Copied' : 'Copy'}</span>
                     </button>
                   </div>
