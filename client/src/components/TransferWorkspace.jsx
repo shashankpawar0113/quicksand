@@ -11,7 +11,7 @@ import {
   Zap,
   Send,
   Link as LinkIcon,
-  File,
+  File as FileIcon,
   Image as ImageIcon,
   Video,
   Music,
@@ -53,7 +53,7 @@ export default function TransferWorkspace({
     if (['js', 'ts', 'jsx', 'tsx', 'py', 'java', 'cpp', 'html', 'css', 'json'].includes(ext)) {
       return <Code2 className="file-type-icon code" size={24} />;
     }
-    return <File className="file-type-icon default" size={24} />;
+    return <FileIcon className="file-type-icon default" size={24} />;
   };
 
   // Format bytes to human readable string
@@ -211,7 +211,7 @@ export default function TransferWorkspace({
                 onClick={(e) => {
                   e.stopPropagation();
                   onSendFiles([
-                    new File(
+                    new window.File(
                       ['Quicksand Instant Transfer Demo Content - SHA256 Verified Byte-Perfect Transfer'],
                       'quicksand_sample_demo.txt',
                       { type: 'text/plain' }
