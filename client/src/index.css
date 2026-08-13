@@ -307,6 +307,42 @@ body {
   line-height: 1.1;
 }
 
+.orb-code-digits-animated {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin: 0.2rem 0;
+}
+
+.code-digit-char {
+  display: inline-block;
+  font-family: var(--font-family-base);
+  font-size: 2.85rem;
+  font-weight: 700;
+  color: var(--color-text-heading);
+  animation: digitPopIn 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  line-height: 1.1;
+  user-select: all;
+}
+
+.code-digit-char.has-space {
+  margin-left: 0.65rem;
+}
+
+@keyframes digitPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.4) rotateX(45deg);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+    filter: blur(0);
+  }
+}
+
 .orb-sublabel {
   font-size: 0.85rem;
   color: var(--color-text-muted);

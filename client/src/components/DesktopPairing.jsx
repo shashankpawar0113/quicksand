@@ -32,7 +32,21 @@ export default function DesktopPairing({ code, isLoading, error, onRefresh }) {
             ) : (
               <div className="orb-code-content">
                 <span className="orb-top-label">Connection Code</span>
-                <h2 className="orb-code-digits">{formattedCode || '--- ---'}</h2>
+                {code && code.length === 6 ? (
+                  <div className="orb-code-digits-animated">
+                    {code.split('').map((char, index) => (
+                      <span
+                        key={`${code}-${index}`}
+                        className={`code-digit-char ${index === 3 ? 'has-space' : ''}`}
+                        style={{ animationDelay: `${index * 70 + 100}ms` }}
+                      >
+                        {char}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <h2 className="orb-code-digits">--- ---</h2>
+                )}
                 <span className="orb-sublabel">Enter on phone</span>
               </div>
             )}
