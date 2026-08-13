@@ -1281,10 +1281,139 @@ body {
   100% { box-shadow: 0 0 0 0 rgba(25, 128, 56, 0); }
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 640px) {
-  .app-layout { padding: 1rem 0.75rem; }
-  .pearl-orb-outer { width: 240px; height: 240px; }
-  .orb-code-digits { font-size: 2.25rem; letter-spacing: 3px; }
-  .brand-title-screen { font-size: 1.8rem; }
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS
+   Covers: short-viewport laptops, small phones, phones, tablets, large desktops
+   Goal: zero-scroll on every device, orb always fully visible
+   ========================================================================== */
+
+/* ── Short viewports (e.g. 13" laptop at 600px height) ─────────────────── */
+@media (max-height: 650px) {
+  .app-layout {
+    padding: 0.5rem 1.5rem;
+  }
+  .app-header-screen {
+    gap: 0.25rem;
+    margin-bottom: 0.2rem;
+  }
+  .brand-title-screen { font-size: 1.5rem; }
+  .user-name { font-size: 0.95rem; }
+  .status-sub-row { padding: 0.1rem 0; }
+  .signal-icon-circle { width: 32px; height: 32px; }
+  .you-status-badge { gap: 0.5rem; }
+  .role-switch-container { margin-bottom: 0.35rem; }
+  .pearl-orb-outer { width: 180px; height: 180px; }
+  .code-digit-char { font-size: 2rem; }
+  .orb-code-digits { font-size: 2rem; }
+  .orb-top-label { font-size: 0.7rem; }
+  .orb-sublabel { font-size: 0.75rem; }
+  .pearl-orb-inner { padding: 0.75rem; }
+  .pearl-orb-container { margin-bottom: 0.35rem; }
+  .orb-action-buttons { gap: 0.35rem; margin-bottom: 0.4rem; }
+  .pill-action-btn { padding: 0.6rem 1.25rem; font-size: 0.88rem; }
+  .screen-pairing-footer p { font-size: 0.78rem; }
+  .digit-form-screen { gap: 0.75rem; margin-bottom: 0.75rem; }
+  .digit-input-screen { width: 40px; height: 50px; font-size: 1.5rem; }
+  .orb-main-title { font-size: 1.15rem; }
 }
+
+/* ── Very short viewports (e.g. iPhone landscape, 560px or less height) ── */
+@media (max-height: 560px) {
+  .app-layout { padding: 0.35rem 1.25rem; }
+  .brand-title-screen { font-size: 1.3rem; }
+  .signal-icon-circle { width: 28px; height: 28px; }
+  .pearl-orb-outer { width: 150px; height: 150px; }
+  .code-digit-char { font-size: 1.65rem; }
+  .orb-code-digits { font-size: 1.65rem; }
+  .pearl-orb-inner { padding: 0.6rem; }
+  .orb-top-label { font-size: 0.62rem; }
+  .orb-sublabel { font-size: 0.68rem; }
+  .pearl-orb-container { margin-bottom: 0.25rem; }
+  .orb-action-buttons { margin-bottom: 0.25rem; }
+  .screen-pairing-footer { display: none; } /* hide footer on tiny heights */
+  .digit-input-screen { width: 36px; height: 44px; font-size: 1.35rem; }
+  .digit-form-screen { gap: 0.5rem; margin-bottom: 0.5rem; }
+}
+
+/* ── Small phones (≤ 390px wide) — e.g. iPhone SE, Galaxy S22 ──────────── */
+@media (max-width: 390px) {
+  .app-layout { padding: 0.75rem 0.85rem; }
+  .brand-title-screen { font-size: 1.5rem; }
+  .pearl-orb-outer { width: 190px; height: 190px; }
+  .code-digit-char { font-size: 2rem; }
+  .orb-code-digits { font-size: 2rem; }
+  .orb-action-buttons { max-width: 260px; }
+  .pill-action-btn { font-size: 0.88rem; padding: 0.65rem 1.1rem; }
+  .digit-input-screen { width: 42px; height: 52px; font-size: 1.5rem; }
+  .digit-form-screen { max-width: 320px; gap: 1rem; }
+  .digit-inputs-row-screen { gap: 0.35rem; }
+}
+
+/* ── Standard phones (≤ 480px wide) ───────────────────────────────────── */
+@media (max-width: 480px) {
+  .app-layout { padding: 0.75rem 1rem; }
+  .brand-title-screen { font-size: 1.6rem; }
+  .pearl-orb-outer { width: 200px; height: 200px; }
+  .code-digit-char { font-size: 2.1rem; }
+  .orb-action-buttons { max-width: 280px; }
+  .pill-action-btn { padding: 0.7rem 1.25rem; font-size: 0.9rem; }
+  .digit-input-screen { width: 44px; height: 54px; font-size: 1.6rem; }
+  .digit-form-screen { max-width: 340px; }
+  /* Transfer workspace: stack tabs, reduce padding */
+  .workspace-tabs-row { gap: 0.4rem; }
+  .workspace-tab-btn { font-size: 0.82rem; padding: 0.55rem 0.9rem; }
+  .text-share-card,
+  .dropzone-card { padding: 1rem; }
+  .transfer-item-card { padding: 0.75rem; }
+  .connected-header h2 { font-size: 1.1rem; }
+}
+
+/* ── Tablets (481px – 768px wide) ─────────────────────────────────────── */
+@media (min-width: 481px) and (max-width: 768px) {
+  .app-layout { padding: 1rem 1.5rem; }
+  .pearl-orb-outer { width: 210px; height: 210px; }
+  .brand-title-screen { font-size: 1.7rem; }
+  .code-digit-char { font-size: 2.2rem; }
+  .digit-input-screen { width: 46px; height: 56px; font-size: 1.7rem; }
+  .digit-form-screen { max-width: 360px; }
+  .workspace-tab-btn { font-size: 0.85rem; }
+}
+
+/* ── Large tablets / small laptops (769px – 1024px wide) ─────────────── */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .app-layout {
+    max-width: 700px;
+    padding: 1rem 2rem;
+  }
+  .pearl-orb-outer { width: 215px; height: 215px; }
+  .brand-title-screen { font-size: 1.75rem; }
+}
+
+/* ── Large desktops (≥ 1280px wide) ───────────────────────────────────── */
+@media (min-width: 1280px) {
+  .app-layout {
+    max-width: 900px;
+    padding: 1.25rem 2rem 1rem;
+  }
+  .pearl-orb-outer { width: 240px; height: 240px; }
+  .code-digit-char { font-size: 2.6rem; }
+  .brand-title-screen { font-size: 2rem; }
+  .signal-icon-circle { width: 44px; height: 44px; }
+  .orb-top-label { font-size: 0.85rem; }
+  .orb-sublabel { font-size: 0.9rem; }
+  .pill-action-btn { padding: 0.85rem 1.75rem; font-size: 1rem; }
+  .digit-input-screen { width: 54px; height: 64px; font-size: 1.85rem; }
+  .digit-form-screen { max-width: 400px; }
+}
+
+/* ── Tall/large screens (≥ 900px height) ──────────────────────────────── */
+@media (min-height: 900px) {
+  .pearl-orb-outer { width: 260px; height: 260px; }
+  .code-digit-char { font-size: 2.7rem; }
+  .pearl-orb-inner { padding: 1.5rem; }
+  .orb-action-buttons { gap: 0.65rem; margin-bottom: 1rem; }
+  .pearl-orb-container { margin-bottom: 1rem; }
+  .digit-input-screen { height: 62px; width: 50px; }
+  .digit-form-screen { gap: 1.5rem; }
+}
+
