@@ -57,7 +57,7 @@ class SocketService {
   createDesktopSession() {
     return new Promise(async (resolve, reject) => {
       const timer = setTimeout(() => {
-        reject(new Error('Connection timed out. If your backend is hosted on a free platform (like Render), it may take 15s to wake up. Click "Generate New Code" to retry.'));
+        reject(new Error('Connection timed out. Please try again.'));
       }, 15000);
 
       try {
