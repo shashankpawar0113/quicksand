@@ -9,7 +9,7 @@ export default function StatusHeader({ connectionState, onDisconnect, sessionCod
       <div className="header-top-row">
         <div className="header-left">
           <div className="q-logo-circle">
-            <span className="q-letter">Q</span>
+            <img src="/logo.jpeg" alt="Quicksand Logo" className="q-logo-img" />
           </div>
         </div>
 
