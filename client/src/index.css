@@ -721,6 +721,76 @@ body {
 .fade-in { animation: fadeIn 0.3s ease forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
+/* Opening Website Entrance Animations */
+.header-top-row {
+  animation: headerSlideDown 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.status-sub-row {
+  animation: statusPopIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+}
+
+.role-switch-container {
+  animation: statusPopIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+}
+
+.pearl-orb-outer {
+  animation: orbExpandIn 0.9s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s both, floatOrb 6s ease-in-out 1.2s infinite;
+}
+
+.orb-action-buttons {
+  animation: buttonsSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+}
+
+.screen-pairing-footer {
+  animation: footerFadeIn 0.8s ease 0.55s both;
+}
+
+.online-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-success);
+  box-shadow: 0 0 0 0 rgba(25, 128, 56, 0.7);
+  animation: greenPulse 2s infinite;
+}
+
+@keyframes headerSlideDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes statusPopIn {
+  from { opacity: 0; transform: translateY(-10px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes orbExpandIn {
+  from { opacity: 0; transform: scale(0.7) translateY(20px); filter: blur(6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+@keyframes floatOrb {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes buttonsSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes footerFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes greenPulse {
+  0% { box-shadow: 0 0 0 0 rgba(25, 128, 56, 0.7); }
+  70% { box-shadow: 0 0 0 8px rgba(25, 128, 56, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(25, 128, 56, 0); }
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 640px) {
   .app-layout { padding: 1rem 0.75rem; }
