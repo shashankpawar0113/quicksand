@@ -9,9 +9,13 @@ class SocketService {
   connect() {
     if (this.socket && this.socket.connected) return this.socket;
 
-    this.socket = io({
-      transports: ['websocket', 'polling'],
-      reconnectionAttempts: 5,
+    const serverUrl = import.meta.env?.VITE_SERVER_URL || (typeof window !== 'undefined' ? window.location.origin : '');
+
+    this.socket = io(serverUrl, {
+      transports: ['polling', 'websocket'],
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000,
+      timeout: 15000,
     });
 
     return this.socket;
@@ -40,7 +44,7 @@ class SocketService {
       } else {
         const timer = setTimeout(() => {
           resolve(socket);
-        }, 5000);
+        }, 10000);
 
         socket.once('connect', () => {
           clearTimeout(timer);
@@ -53,8 +57,8 @@ class SocketService {
   createDesktopSession() {
     return new Promise(async (resolve, reject) => {
       const timer = setTimeout(() => {
-        reject(new Error('Connection timed out. Server taking longer to respond. Click "Generate New Code" to retry.'));
-      }, 8000);
+        reject(new Error('Connection timed out. If your backend is hosted on a free platform (like Render), it may take 15s to wake up. Click "Generate New Code" to retry.'));
+      }, 15000);
 
       try {
         const socket = await this.ensureConnected();
@@ -76,8 +80,8 @@ class SocketService {
   joinMobileSession(code) {
     return new Promise(async (resolve, reject) => {
       const timer = setTimeout(() => {
-        reject(new Error('Connection timed out. Please check network connection and try again.'));
-      }, 8000);
+        reject(new Error('Connection timed out. Please check network connection and click "Connect" to try again.'));
+      }, 15000);
 
       try {
         const socket = await this.ensureConnected();

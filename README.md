@@ -72,6 +72,30 @@ npm start
 
 ---
 
+## 🌐 Deployment Instructions
+
+### Recommended: Render / Railway / Heroku / VPS (All-in-One Web Service)
+Quicksand requires a running Node.js + Socket.IO server for WebRTC signaling and pairing code generation.
+
+1. Create a **Web Service** on [Render](https://render.com/) or [Railway](https://railway.app/).
+2. Connect your GitHub repository `shashankpawar0113/quicksand`.
+3. Set **Build Command**: `npm install && npm run build`
+4. Set **Start Command**: `npm start`
+5. Click **Deploy**. The Express server will build the frontend and serve both backend & UI on the assigned URL!
+
+> [!TIP]
+> On Render's Free tier, the web service spins down after inactivity. On initial load after a break, allow 10–15 seconds for the free server instance to spin back up.
+
+### Split Deployment (Vercel / Netlify Frontend + Render Backend)
+If hosting the static frontend on Vercel or Netlify:
+1. Deploy the backend server to Render/Railway.
+2. In your Vercel project environment variables, add:
+   ```env
+   VITE_SERVER_URL=https://your-backend-app.onrender.com
+   ```
+
+---
+
 ## 🛡️ Privacy & Security
 
 - **No Permanent File Storage**: All data transfers happen in-memory directly between browsers or through transient in-memory socket buffers.
