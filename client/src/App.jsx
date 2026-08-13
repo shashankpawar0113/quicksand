@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import StatusHeader from './components/StatusHeader';
 import DesktopPairing from './components/DesktopPairing';
 import MobilePairing from './components/MobilePairing';
@@ -6,8 +6,32 @@ import TransferWorkspace from './components/TransferWorkspace';
 import { socketService } from './modules/socket';
 import { WebRTCManager } from './modules/webrtcManager';
 import { TransferEngine } from './modules/transferEngine';
-import { Monitor, Smartphone, RefreshCw, AlertTriangle } from 'lucide-react';
+import { Monitor, Smartphone, RefreshCw, WifiOff } from 'lucide-react';
 
+// â”€â”€ Toast Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+function Toast({ id, title, body, onRemove }) {
+  const [exiting, setExiting] = useState(false);
+
+  useEffect(() => {
+    const hide = setTimeout(() => {
+      setExiting(true);
+    }, 3500);
+    const remove = setTimeout(() => onRemove(id), 3800);
+    return () => { clearTimeout(hide); clearTimeout(remove); };
+  }, [id, onRemove]);
+
+  return (
+    <div className={`toast${exiting ? ' exiting' : ''}`}>
+      <span className="toast-icon"><WifiOff size={18} /></span>
+      <div className="toast-text">
+        <div className="toast-title">{title}</div>
+        {body && <div className="toast-body">{body}</div>}
+      </div>
+    </div>
+  );
+}
+
+// â”€â”€ App â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 export default function App() {
   const [deviceRole, setDeviceRole] = useState('desktop'); // 'desktop' | 'mobile'
   const [sessionCode, setSessionCode] = useState('');
@@ -18,6 +42,14 @@ export default function App() {
 
   const [transfers, setTransfers] = useState(new Map());
   const [receivedTexts, setReceivedTexts] = useState([]);
+
+  // Toast state
+  const [toasts, setToasts] = useState([]);
+  const removeToast = useCallback((id) => setToasts((prev) => prev.filter((t) => t.id !== id)), []);
+  const addToast = useCallback((title, body) => {
+    const id = crypto.randomUUID();
+    setToasts((prev) => [...prev, { id, title, body }]);
+  }, []);
 
   const webrtcManagerRef = useRef(null);
   const transferEngineRef = useRef(null);
@@ -137,12 +169,25 @@ export default function App() {
   };
 
   const handlePeerDisconnect = () => {
-    setConnectionState('disconnected');
+    // Show toast instead of full-page block
+    addToast('Connection ended', 'The paired device disconnected.');
+
     if (webrtcManagerRef.current) {
       webrtcManagerRef.current.close();
       webrtcManagerRef.current = null;
     }
     transferEngineRef.current = null;
+
+    // Reset to pairing view immediately
+    setConnectionState(null);
+    setSessionCode('');
+    setPeerSocketId('');
+    setTransfers(new Map());
+    setReceivedTexts([]);
+
+    if (deviceRole === 'desktop') {
+      initDesktopSession();
+    }
   };
 
   const handleManualDisconnect = () => {
@@ -180,6 +225,15 @@ export default function App() {
 
   return (
     <div className="app-layout">
+      {/* Toast notifications â€” upper right */}
+      {toasts.length > 0 && (
+        <div className="toast-container">
+          {toasts.map((t) => (
+            <Toast key={t.id} id={t.id} title={t.title} body={t.body} onRemove={removeToast} />
+          ))}
+        </div>
+      )}
+
       {/* Top Header */}
       <StatusHeader
         connectionState={connectionState}
@@ -240,7 +294,7 @@ export default function App() {
         )}
 
         {connectionState === 'connecting' && (
-          <div className="connecting-view-card glass-panel fade-in">
+          <div className="connecting-view-card fade-in">
             <div className="connecting-spinner">
               <RefreshCw className="animate-spin" size={40} />
             </div>
@@ -257,17 +311,6 @@ export default function App() {
             onSendText={handleSendText}
             onCancelTransfer={handleCancelTransfer}
           />
-        )}
-
-        {connectionState === 'disconnected' && (
-          <div className="disconnected-card glass-panel fade-in">
-            <AlertTriangle size={36} className="warn-icon" />
-            <h2>Connection Ended</h2>
-            <p>The paired device disconnected or the session expired.</p>
-            <button className="new-session-btn" onClick={handleManualDisconnect}>
-              Start New Connection
-            </button>
-          </div>
         )}
       </main>
     </div>
