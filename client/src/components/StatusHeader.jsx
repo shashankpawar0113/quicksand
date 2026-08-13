@@ -1,13 +1,11 @@
 import React from 'react';
-import { Zap, Wifi, ShieldCheck, LogOut, ArrowRightLeft } from 'lucide-react';
+import { Wifi, ArrowRightLeft, LogOut } from 'lucide-react';
 
 export default function StatusHeader({ connectionState, onDisconnect, sessionCode }) {
   return (
     <header className="app-header">
       <div className="header-brand">
-        <div className="brand-logo">
-          <Zap className="logo-icon" />
-        </div>
+        <img src="/logo.jpeg" alt="Quicksand Logo" className="brand-logo-img" />
         <div className="brand-text">
           <h1 className="brand-title">Quicksand</h1>
           <span className="brand-subtitle">Instant Phone ↔ Computer Transfer</span>
