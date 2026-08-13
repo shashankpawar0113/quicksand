@@ -1,55 +1,78 @@
-import React from 'react';
-import { Wifi, ArrowRightLeft, LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { Wifi, ArrowRightLeft, LogOut, HelpCircle, Radio, X } from 'lucide-react';
 
 export default function StatusHeader({ connectionState, onDisconnect, sessionCode }) {
+  const [showHelp, setShowHelp] = useState(false);
+
   return (
-    <header className="app-header">
-      <div className="header-brand">
-        <img src="/logo.jpeg" alt="Quicksand Logo" className="brand-logo-img" />
-        <div className="brand-text">
-          <h1 className="brand-title">Quicksand</h1>
-          <span className="brand-subtitle">Instant Phone ↔ Computer Transfer</span>
+    <header className="app-header-screen">
+      <div className="header-top-row">
+        <div className="header-left">
+          <div className="q-logo-circle">
+            <span className="q-letter">Q</span>
+          </div>
+        </div>
+
+        <div className="header-center">
+          <h1 className="brand-title-screen">Quicksand</h1>
+        </div>
+
+        <div className="header-right">
+          <button
+            className="help-icon-btn"
+            onClick={() => setShowHelp(!showHelp)}
+            title="How Quicksand works"
+          >
+            <HelpCircle size={24} />
+          </button>
         </div>
       </div>
 
-      {connectionState && (
-        <div className="header-status">
-          <div className={`status-badge ${connectionState}`}>
-            {connectionState === 'connected' && (
-              <>
-                <span className="dot direct"></span>
-                <Wifi className="badge-icon" />
-                <span>Direct P2P</span>
-              </>
-            )}
-            {connectionState === 'relayed' && (
-              <>
-                <span className="dot relay"></span>
-                <ArrowRightLeft className="badge-icon" />
-                <span>Relayed Connection</span>
-              </>
-            )}
-            {connectionState === 'connecting' && (
-              <>
-                <span className="dot connecting"></span>
-                <span>Connecting...</span>
-              </>
-            )}
+      {/* Online Status Bar */}
+      <div className="status-sub-row">
+        <div className="you-status-badge">
+          <div className="signal-icon-circle">
+            <Radio size={20} className="radio-icon" />
           </div>
+          <div className="status-text-meta">
+            <span className="user-name">You</span>
+            <span className="online-indicator">
+              <span className="online-dot"></span>
+              {connectionState === 'connected'
+                ? 'Direct P2P Connected'
+                : connectionState === 'relayed'
+                ? 'Relayed Connection'
+                : connectionState === 'connecting'
+                ? 'Connecting...'
+                : 'Online'}
+            </span>
+          </div>
+        </div>
 
-          {sessionCode && (
-            <div className="session-code-pill">
-              <span className="pill-label">Code:</span>
-              <span className="pill-val">{sessionCode}</span>
+        {connectionState && onDisconnect && (
+          <button className="disconnect-btn-screen" onClick={onDisconnect} title="End Connection">
+            <LogOut size={16} />
+            <span>End Session</span>
+          </button>
+        )}
+      </div>
+
+      {/* Help Modal Popup */}
+      {showHelp && (
+        <div className="help-modal-overlay fade-in" onClick={() => setShowHelp(false)}>
+          <div className="help-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>About Quicksand</h3>
+              <button className="close-modal-btn" onClick={() => setShowHelp(false)}>
+                <X size={18} />
+              </button>
             </div>
-          )}
-
-          {onDisconnect && (
-            <button className="disconnect-btn" onClick={onDisconnect} title="End Connection">
-              <LogOut size={16} />
-              <span className="btn-text">Disconnect</span>
-            </button>
-          )}
+            <div className="modal-body">
+              <p>⚡ <strong>Zero Friction:</strong> No account creation, login, passwords, or app installation required.</p>
+              <p>🔒 <strong>Cryptographic 1-Time Code:</strong> Every session gets a unique 6-digit code destroyed immediately upon pairing.</p>
+              <p>🚀 <strong>Direct P2P & No Compression:</strong> Files transfer exact byte-for-byte directly between devices with SHA-256 verification.</p>
+            </div>
+          </div>
         </div>
       )}
     </header>
