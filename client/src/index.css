@@ -475,6 +475,10 @@ body {
   gap: 0.5rem;
 }
 
+.digit-inputs-row-screen.shake-error {
+  animation: inputShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
 .digit-input-screen {
   width: 48px;
   height: 58px;
@@ -498,6 +502,33 @@ body {
 
 .digit-input-screen.filled {
   background: #f4f4f4;
+}
+
+.digit-input-screen.error-border {
+  border-bottom-color: var(--color-danger);
+  background: #fff8f8;
+}
+
+.clear-digits-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  transition: color 0.2s ease;
+}
+.clear-digits-btn:hover { color: var(--color-text-heading); }
+
+@keyframes inputShake {
+  10%, 90% { transform: translate3d(-1px, 0, 0); }
+  20%, 80% { transform: translate3d(2px, 0, 0); }
+  30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+  40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
 .submit-connect-btn {

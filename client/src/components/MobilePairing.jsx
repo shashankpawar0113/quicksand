@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Smartphone, ArrowRight, Loader2, AlertCircle, UploadCloud, Folder } from 'lucide-react';
+import { Smartphone, ArrowRight, Loader2, AlertCircle, UploadCloud, RotateCcw } from 'lucide-react';
 
-export default function MobilePairing({ onConnect, isLoading, error, initialCode = '' }) {
+export default function MobilePairing({ onConnect, isLoading, error, initialCode = '', onClearError }) {
   const [digits, setDigits] = useState(['', '', '', '', '', '']);
   const inputRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null)];
 
@@ -16,6 +16,10 @@ export default function MobilePairing({ onConnect, isLoading, error, initialCode
   }, [initialCode]);
 
   const handleChange = (index, value) => {
+    if (error && onClearError) {
+      onClearError();
+    }
+
     const char = value.replace(/[^0-9]/g, '').slice(-1);
     const newDigits = [...digits];
     newDigits[index] = char;
@@ -32,6 +36,10 @@ export default function MobilePairing({ onConnect, isLoading, error, initialCode
   };
 
   const handleKeyDown = (index, e) => {
+    if (error && onClearError) {
+      onClearError();
+    }
+
     if (e.key === 'Backspace' && !digits[index] && index > 0) {
       inputRefs[index - 1].current?.focus();
     }
@@ -39,6 +47,10 @@ export default function MobilePairing({ onConnect, isLoading, error, initialCode
 
   const handlePaste = (e) => {
     e.preventDefault();
+    if (error && onClearError) {
+      onClearError();
+    }
+
     const pasted = e.clipboardData.getData('text').replace(/[^0-9]/g, '').slice(0, 6);
     if (pasted) {
       const newDigits = Array(6).fill('');
@@ -50,6 +62,12 @@ export default function MobilePairing({ onConnect, isLoading, error, initialCode
         onConnect(pasted);
       }
     }
+  };
+
+  const handleClearAll = () => {
+    setDigits(['', '', '', '', '', '']);
+    if (onClearError) onClearError();
+    inputRefs[0].current?.focus();
   };
 
   const handleSubmit = (e) => {
@@ -74,7 +92,7 @@ export default function MobilePairing({ onConnect, isLoading, error, initialCode
       </div>
 
       <form onSubmit={handleSubmit} className="digit-form-screen">
-        <div className="digit-inputs-row-screen" onPaste={handlePaste}>
+        <div className={`digit-inputs-row-screen ${error ? 'shake-error' : ''}`} onPaste={handlePaste}>
           {digits.map((digit, idx) => (
             <input
               key={idx}
@@ -86,11 +104,18 @@ export default function MobilePairing({ onConnect, isLoading, error, initialCode
               value={digit}
               onChange={(e) => handleChange(idx, e.target.value)}
               onKeyDown={(e) => handleKeyDown(idx, e)}
-              className={`digit-input-screen ${digit ? 'filled' : ''}`}
+              onFocus={(e) => e.target.select()}
+              className={`digit-input-screen ${digit ? 'filled' : ''} ${error ? 'error-border' : ''}`}
               disabled={isLoading}
             />
           ))}
         </div>
+
+        {digits.some((d) => d !== '') && (
+          <button type="button" className="clear-digits-btn" onClick={handleClearAll}>
+            <RotateCcw size={14} /> Clear digits
+          </button>
+        )}
 
         {error && (
           <div className="error-banner-screen fade-in">

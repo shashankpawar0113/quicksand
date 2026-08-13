@@ -225,6 +225,7 @@ export default function App() {
                 isLoading={isPairingLoading}
                 error={pairingError}
                 onRefresh={initDesktopSession}
+                onClearError={() => setPairingError('')}
               />
             ) : (
               <MobilePairing
@@ -232,6 +233,7 @@ export default function App() {
                 isLoading={isPairingLoading}
                 error={pairingError}
                 initialCode={initialCodeFromUrl}
+                onClearError={() => setPairingError('')}
               />
             )}
           </>
