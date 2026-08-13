@@ -1,24 +1,41 @@
 import { socketService } from './socket.js';
 
 export class WebRTCManager {
-  constructor({ peerSocketId, isInitiator, onConnectionStateChange, onDataMessage }) {
+  constructor({
+    peerSocketId,
+    isInitiator,
+    onConnectionStateChange,
+    onDataMessage,
+    connectionTimeoutMs = 8000,
+  }) {
     this.peerSocketId = peerSocketId;
     this.isInitiator = isInitiator;
     this.onConnectionStateChange = onConnectionStateChange;
     this.onDataMessage = onDataMessage;
+    this.connectionTimeoutMs = connectionTimeoutMs;
 
     this.peerConnection = null;
     this.dataChannel = null;
     this.connectionState = 'connecting'; // 'connecting' | 'connected' | 'relayed' | 'disconnected'
     this.connectionTimeoutTimer = null;
 
-    // Public STUN configuration
+    // Public STUN & TURN Relay configuration
+    // Primary: STUN (Direct P2P), Fallback 1: TURN Relay, Fallback 2: Socket.IO Relay
     this.rtcConfig = {
       iceServers: [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
         { urls: 'stun:stun2.l.google.com:19302' },
         { urls: 'stun:stun3.l.google.com:19302' },
+        {
+          urls: [
+            'turn:openrelay.metered.ca:80',
+            'turn:openrelay.metered.ca:443',
+            'turn:openrelay.metered.ca:443?transport=tcp',
+          ],
+          username: 'openrelay',
+          credential: 'openrelay',
+        },
       ],
     };
   }
@@ -76,13 +93,13 @@ export class WebRTCManager {
       };
     }
 
-    // Set a 6-second timer to fallback to Socket.IO relay if WebRTC direct channel isn't established quickly
+    // Configurable timeout to fallback to Socket.IO relay if WebRTC direct & TURN fail to open
     this.connectionTimeoutTimer = setTimeout(() => {
       if (this.connectionState === 'connecting') {
-        console.warn('WebRTC P2P direct connection timeout. Switching to Socket.IO relay fallback.');
+        console.warn(`WebRTC connection timeout (${this.connectionTimeoutMs}ms). Switching to Socket.IO extreme relay fallback.`);
         this.handleWebRTCFailure();
       }
-    }, 6000);
+    }, this.connectionTimeoutMs);
   }
 
   setupDataChannel(channel) {
