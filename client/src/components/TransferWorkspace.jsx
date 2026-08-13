@@ -199,9 +199,30 @@ export default function TransferWorkspace({
             <p className="dropzone-sub-description">
               Supports photos, 4K videos, documents, zips, & raw binaries with <strong>zero quality loss</strong>.
             </p>
-            <button className="pill-action-btn browse-files-btn" type="button">
-              <span>Choose Files</span>
-            </button>
+            <div className="dropzone-buttons-row">
+              <button className="pill-action-btn browse-files-btn" type="button">
+                <span>Choose Files</span>
+              </button>
+
+              <button
+                className="pill-secondary-btn sample-file-btn"
+                type="button"
+                id="mock-file-btn"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSendFiles([
+                    new File(
+                      ['Quicksand Instant Transfer Demo Content - SHA256 Verified Byte-Perfect Transfer'],
+                      'quicksand_sample_demo.txt',
+                      { type: 'text/plain' }
+                    ),
+                  ]);
+                }}
+              >
+                <Sparkles size={14} />
+                <span>Send Sample File</span>
+              </button>
+            </div>
           </div>
 
           {/* Transfer Queue Section */}
