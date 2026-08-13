@@ -32,16 +32,25 @@ export default function DesktopPairing({ code, isLoading, error, onRefresh }) {
         </p>
 
         <div className="code-display-box">
-          <div className="code-digits">{formattedCode}</div>
-          <button
-            className={`copy-code-btn ${copied ? 'copied' : ''}`}
-            onClick={copyToClipboard}
-            disabled={!code}
-            title="Copy 6-digit code"
-          >
-            {copied ? <Check size={18} /> : <Copy size={18} />}
-            <span>{copied ? 'Copied!' : 'Copy Code'}</span>
-          </button>
+          {isLoading ? (
+            <div className="code-loading-state">
+              <Loader2 className="animate-spin code-spinner" size={32} />
+              <span>Generating Secure Code...</span>
+            </div>
+          ) : (
+            <>
+              <div className="code-digits">{formattedCode}</div>
+              <button
+                className={`copy-code-btn ${copied ? 'copied' : ''}`}
+                onClick={copyToClipboard}
+                disabled={!code}
+                title="Copy 6-digit code"
+              >
+                {copied ? <Check size={18} /> : <Copy size={18} />}
+                <span>{copied ? 'Copied!' : 'Copy Code'}</span>
+              </button>
+            </>
+          )}
         </div>
 
         <div className="pairing-status-indicator">

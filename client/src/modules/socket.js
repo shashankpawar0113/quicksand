@@ -32,30 +32,68 @@ class SocketService {
     }
   }
 
-  createDesktopSession() {
-    return new Promise((resolve, reject) => {
+  ensureConnected() {
+    return new Promise((resolve) => {
       const socket = this.getSocket();
-      socket.emit('create-desktop-session', (response) => {
-        if (response.success) {
-          resolve(response);
-        } else {
-          reject(new Error(response.error || 'Failed to generate pairing code.'));
-        }
-      });
+      if (socket.connected) {
+        resolve(socket);
+      } else {
+        const timer = setTimeout(() => {
+          resolve(socket);
+        }, 5000);
+
+        socket.once('connect', () => {
+          clearTimeout(timer);
+          resolve(socket);
+        });
+      }
+    });
+  }
+
+  createDesktopSession() {
+    return new Promise(async (resolve, reject) => {
+      const timer = setTimeout(() => {
+        reject(new Error('Connection timed out. Server taking longer to respond. Click "Generate New Code" to retry.'));
+      }, 8000);
+
+      try {
+        const socket = await this.ensureConnected();
+        socket.emit('create-desktop-session', (response) => {
+          clearTimeout(timer);
+          if (response && response.success) {
+            resolve(response);
+          } else {
+            reject(new Error(response?.error || 'Failed to generate pairing code.'));
+          }
+        });
+      } catch (err) {
+        clearTimeout(timer);
+        reject(err);
+      }
     });
   }
 
   joinMobileSession(code) {
-    return new Promise((resolve, reject) => {
-      const socket = this.getSocket();
-      socket.emit('join-mobile-session', { code }, (response) => {
-        if (response.success) {
-          this.peerSocketId = response.peerSocketId;
-          resolve(response);
-        } else {
-          reject(new Error(response.error || 'Failed to connect.'));
-        }
-      });
+    return new Promise(async (resolve, reject) => {
+      const timer = setTimeout(() => {
+        reject(new Error('Connection timed out. Please check network connection and try again.'));
+      }, 8000);
+
+      try {
+        const socket = await this.ensureConnected();
+        socket.emit('join-mobile-session', { code }, (response) => {
+          clearTimeout(timer);
+          if (response && response.success) {
+            this.peerSocketId = response.peerSocketId;
+            resolve(response);
+          } else {
+            reject(new Error(response?.error || 'Failed to connect.'));
+          }
+        });
+      } catch (err) {
+        clearTimeout(timer);
+        reject(err);
+      }
     });
   }
 
